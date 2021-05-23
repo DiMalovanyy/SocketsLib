@@ -87,17 +87,17 @@ int main( int argc, char ** argv) {
     //Infinity loop
     for(;;) {
         struct sockaddr_in clientAddr; //Client address descriptor
+        socklen_t clientAddrLen = sizeof(clientAddr);
         
         //Wait client connection
-        int clientSock = accept(servSock, (struct sockaddr*)&clientAddr, sizeof(clientAddr));
-        socklen_t cientSocketSize = sizeof(clientSock);
+        int clientSock = accept(servSock, (struct sockaddr*)&clientAddr, &clientAddrLen);
         if (clientSock < 0) {
             ErrorExit("accept failed");
         }
         
         char clientName[INET_ADDRSTRLEN]; //String to contain client addr
         if (inet_ntop(AF_INET, &clientAddr.sin_addr.s_addr, clientName,
-                     &cientSocketSize) != NULL) {
+                     sizeof(clientName)) != NULL) {
            printf("Handling client %s/%d\n", clientName, ntohs(clientAddr.sin_port));
         } else {
            puts("Unable to get client address");
