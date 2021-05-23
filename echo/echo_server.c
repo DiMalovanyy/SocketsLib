@@ -90,13 +90,14 @@ int main( int argc, char ** argv) {
         
         //Wait client connection
         int clientSock = accept(servSock, (struct sockaddr*)&clientAddr, sizeof(clientAddr));
+        socklen_t cientSocketSize = sizeof(clientSock);
         if (clientSock < 0) {
             ErrorExit("accept failed");
         }
         
         char clientName[INET_ADDRSTRLEN]; //String to contain client addr
         if (inet_ntop(AF_INET, &clientAddr.sin_addr.s_addr, clientName,
-                      sizeof(clientName)) != NULL) {
+                     &cientSocketSize) != NULL) {
            printf("Handling client %s/%d\n", clientName, ntohs(clientAddr.sin_port));
         } else {
            puts("Unable to get client address");
