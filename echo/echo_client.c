@@ -16,6 +16,36 @@
 
 #define ErrorExit(x) {perror(x); exit(EXIT_FAILURE); }
 
+void PrintLocalAndForeignAddr(int socket) {
+    //Local address
+    struct sockaddr_in localAddr;
+    memset(&localAddr, 0, sizeof(localAddr));
+    socklen_t localAddrLen = sizeof(localAddr); //in-out params
+    getsockname(socket, (struct sockaddr* )& localAddr, &localAddrLen);
+
+    
+    //foreign address
+    struct sockaddr_in foreignAddr;
+    memset(&foreignAddr, 0, sizeof(foreignAddr));
+    socklen_t foreignAddrLen = sizeof(foreignAddr); //in-out params
+    getpeername(socket, (struct sockaddr* )& foreignAddr, &foreignAddrLen);
+    
+    char localName[INET_ADDRSTRLEN];
+    char foreignName[INET_ADDRSTRLEN];
+    
+    if (inet_ntop(AF_INET, &localAddr.sin_addr.s_addr, localName, sizeof(localName)) != NULL) {
+        printf("Local address: %s:%d\n", localName, ntohs(localAddr.sin_port));
+    } else {
+        ErrorExit("local addr error");
+    }
+    
+    if (inet_ntop(AF_INET, &foreignAddr.sin_addr.s_addr, foreignName, sizeof(foreignName)) != NULL) {
+        printf("Foreign address: %s:%d\n", foreignName, ntohs(foreignAddr.sin_port));
+    } else {
+        ErrorExit("foreign addr error");
+    }
+    
+}
 
 int main (int argc, char ** argv) {
 
@@ -55,6 +85,9 @@ int main (int argc, char ** argv) {
     if (connect(sock, (struct sockaddr*)&servAddr, sizeof(servAddr)) < 0 ) {
         ErrorExit("connection error");
     }
+    
+    //Print local and foreign address
+    PrintLocalAndForeignAddr(sock);
     
     //Determine string len
     ssize_t echoStringLen = strlen(echoString);
