@@ -11,76 +11,54 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-//Some utils for both server and client
-#include "echo_utils.h"
 
-#define ErrorExit(x) {perror(x); exit(EXIT_FAILURE); }
+//libutils.a
+#include <Practical.h>
+#include <ClientUtility.h>
 
 
 int main (int argc, char ** argv) {
-
+//    SetupTCPClientSocket("", "");
     // Usage
     if (argc < 3 || argc > 4) { //Test input correctness
-        printf("Parameters: <Server address> <echo string> [<server port>]\n");
-        exit(EXIT_FAILURE);
+        DieWithUserMessage("Parameter(s)", "<Server address/Name> <Echo Word> [<Server Port/Service>]");
     }
     
     char *serverIP = argv[1]; //First arg server Ip
     char *echoString = argv[2]; //Second arg: echo string
+    //Third arg (optional): server port/service;
+    char *service = (argc == 4) ? argv[3] : "echo";
     
-    //Setup optional server port OR utils port
-    in_port_t serverPort = (argc == 4) ? atoi(argv[3]) : SERVER_PORT;
-    
-    //Create reliable socket via (TCP)
-    int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    //Create connection TCP Socket
+    int sock = SetupTCPClientSocket(serverIP, service);
     if (sock < 0) {
-        ErrorExit("Socket creation");
+        DieWithUserMessage("SetupTCPClientSocketFailed", "unable to connect");
     }
     
-    //Create server address descriptor
-    struct sockaddr_in servAddr; //Server addr
-    memset(&servAddr, 0, sizeof(servAddr)); //Zero out structure
-    servAddr.sin_family = AF_INET;          //IpV4 address family
-    //Convert address
-    int portRtv = inet_pton(AF_INET, serverIP, &servAddr.sin_addr.s_addr);
-    if (portRtv == 0) {
-        ErrorExit("Invalid address param");
-    } else if (portRtv < 0) {
-        ErrorExit("inet_pton() failed");
-    }
-    servAddr.sin_port = htons(serverPort); // Server port
-    
-    
-    //Establish connection between client server
-    if (connect(sock, (struct sockaddr*)&servAddr, sizeof(servAddr)) < 0 ) {
-        ErrorExit("connection error");
-    }
-    
-    //Determine string len
-    ssize_t echoStringLen = strlen(echoString);
+    ssize_t echoStringLen = strlen(echoString); //Determine input length
     
     //Send the string tothe server
     ssize_t numBytes = send(sock, echoString, echoStringLen, 0);
     if (numBytes < 0) {
-        ErrorExit("sending error");
+        DieWithSystemMessage("send() failed");
     } else if (numBytes != echoStringLen ){
-        ErrorExit("send invalid amount of bytes");
+        DieWithUserMessage("send()", "send unexpected number of bytes");
     }
     
+    
     //Recived the same string back from the server
-    ssize_t totalBytesReceived = 0;
+    ssize_t totalBytesReceived = 0; //Count of total bytes received
     fputs("Received: ", stdout);
     while (totalBytesReceived < echoStringLen) {
         char buffer[BUFSIZ]; // I/O buffer
         
         //Receive up to the buffer size (minus 1 to leave space for
         //   a null terminator) bytes from the sender
-        
         numBytes = recv(sock, buffer, sizeof(buffer) - 1, 0);
         if (numBytes < 0) {
-            ErrorExit("recv failed");
+            DieWithSystemMessage("recv() failed");
         } else if (numBytes == 0) {
-            ErrorExit("connection closed permatently");
+            DieWithUserMessage("recv()", "conection closed permaturely");
         }
         
         totalBytesReceived += numBytes;
@@ -89,7 +67,6 @@ int main (int argc, char ** argv) {
     }
     
     fputc('\n', stdout);
-    
     //Closing socket
     close(sock);
     exit(EXIT_SUCCESS);
