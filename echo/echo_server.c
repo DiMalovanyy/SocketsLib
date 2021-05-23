@@ -19,9 +19,20 @@
 #define MAX_PEDDING 5
 
 
-void HandleTCPClient( int clntSocket ) {
-    char clientBuffer[BUFSIZ];
+void HandleTCPClient( int clntSocket, const char* clientName ) {
+    //Send greeting message to client
+    char greetingBuffer[BUFSIZ];
+    sprintf(greetingBuffer, "Hi, %s", clientName);
     
+    //send greetings to client
+    ssize_t numBytesSent = send(clntSocket, greetingBuffer, sizeof(greetingBuffer), 0);
+    if (numBytesSent < 0) {
+        ErrorExit("greetings failed");
+    } else {
+        dprintf(STDOUT_FILENO, "greeting sended to %s.\n", clientName);
+    }
+    
+    char clientBuffer[BUFSIZ];
     //Receive msg from client
     ssize_t numBytesReceived = recv(clntSocket, clientBuffer, sizeof(clientBuffer), 0);
     if (numBytesReceived < 0) {
@@ -31,7 +42,7 @@ void HandleTCPClient( int clntSocket ) {
     //Send received string and receive again
     while (numBytesReceived > 0) {
         //Echo message back
-        int numBytesSent = send(clntSocket, clientBuffer, numBytesReceived, 0);
+        numBytesSent = send(clntSocket, clientBuffer, numBytesReceived, 0);
         if (numBytesSent < 0) {
             ErrorExit("sending error");
         } else if (numBytesSent != numBytesReceived) {
@@ -102,8 +113,9 @@ int main( int argc, char ** argv) {
         } else {
            puts("Unable to get client address");
         }
+        
         //Handling TCP socket
-        HandleTCPClient(clientSock);
+        HandleTCPClient(clientSock, clientName);
     }
 }
 

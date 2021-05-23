@@ -56,9 +56,24 @@ int main (int argc, char ** argv) {
         ErrorExit("connection error");
     }
     
-    //Determine string len
-    ssize_t echoStringLen = strlen(echoString);
+    //Wait for greeting
+    for (;;) {
+        char greetingBuffer[BUFSIZ];
+        
+        ssize_t receivedBytes = recv(sock, greetingBuffer, sizeof(greetingBuffer), 0);
+        if  (receivedBytes < 0) {
+            ErrorExit("receive failed");
+        } if (receivedBytes == 0) {
+            continue;
+        }
+        
+        dprintf(STDOUT_FILENO,"Greeting from server: %s\n", greetingBuffer);
+        break;
+    }
     
+//    Determine string len
+    ssize_t echoStringLen = strlen(echoString);
+
     //Send the string tothe server
     ssize_t numBytes = send(sock, echoString, echoStringLen, 0);
     if (numBytes < 0) {
@@ -66,28 +81,28 @@ int main (int argc, char ** argv) {
     } else if (numBytes != echoStringLen ){
         ErrorExit("send invalid amount of bytes");
     }
-    
+
     //Recived the same string back from the server
     ssize_t totalBytesReceived = 0;
     fputs("Received: ", stdout);
     while (totalBytesReceived < echoStringLen) {
         char buffer[BUFSIZ]; // I/O buffer
-        
+
         //Receive up to the buffer size (minus 1 to leave space for
         //   a null terminator) bytes from the sender
-        
+
         numBytes = recv(sock, buffer, sizeof(buffer) - 1, 0);
         if (numBytes < 0) {
             ErrorExit("recv failed");
         } else if (numBytes == 0) {
             ErrorExit("connection closed permatently");
         }
-        
+
         totalBytesReceived += numBytes;
         buffer[numBytes] = '\0';
         fputs(buffer, stdout);
     }
-    
+
     fputc('\n', stdout);
     
     //Closing socket
