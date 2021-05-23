@@ -63,7 +63,7 @@ int main (int argc, char ** argv) {
     ssize_t numBytes = send(sock, echoString, echoStringLen, 0);
     if (numBytes < 0) {
         ErrorExit("sending error");
-    } else {
+    } else if (numBytes != echoStringLen ){
         ErrorExit("send invalid amount of bytes");
     }
     

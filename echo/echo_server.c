@@ -31,7 +31,7 @@ void HandleTCPClient( int clntSocket ) {
     //Send received string and receive again
     while (numBytesReceived > 0) {
         //Echo message back
-        int numBytesSent = send(clntSocket, clientBuffer, sizeof(clientBuffer), 0);
+        int numBytesSent = send(clntSocket, clientBuffer, numBytesReceived, 0);
         if (numBytesSent < 0) {
             ErrorExit("sending error");
         } else if (numBytesSent != numBytesReceived) {
