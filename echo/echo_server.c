@@ -54,7 +54,7 @@ int main( int argc, char ** argv) {
     
     //Validate input params
     if (argc > 2) {
-        dprintf(STDOUT_FILENO, "Parameters: [<port>]");
+        dprintf(STDOUT_FILENO, "Parameters: [<port>]\n");
         exit(EXIT_FAILURE);
     }
     

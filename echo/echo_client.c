@@ -21,7 +21,7 @@ int main (int argc, char ** argv) {
 
     // Usage
     if (argc < 3 || argc > 4) { //Test input correctness
-        printf("Parameters: <Server address> <echo string> [<server port>]");
+        printf("Parameters: <Server address> <echo string> [<server port>]\n");
         exit(EXIT_FAILURE);
     }
     
