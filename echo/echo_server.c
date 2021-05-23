@@ -18,6 +18,29 @@
 #define ErrorExit(x) {perror(x); exit(EXIT_FAILURE); }
 #define MAX_PEDDING 5
 
+//local = 0, foreign = 1
+void PrintAddr(int socket, int localOrForeign) {
+    struct sockaddr_in addr;
+    socklen_t addrLen = sizeof(addr);
+    memset(&addr, 0, addrLen);
+    
+    int retVal;
+    if (localOrForeign == 0) {
+        retVal = getsockname(socket, (struct sockaddr*)&addr, &addrLen);
+    } else if (localOrForeign == 1 ) {
+        retVal = getpeername(socket, (struct sockaddr*)&addr, &addrLen);
+    } else {
+        ErrorExit("Undefined second param");
+    }
+    
+    char addrName[INET_ADDRSTRLEN];
+    if (inet_ntop(AF_INET, &addr.sin_addr.s_addr, addrName, sizeof(addrName)) != NULL) {
+        printf("%s address: %s:%d\n", ((localOrForeign == 0) ? "Local": "Foreign"), addrName, ntohs(addr.sin_port)   );
+    }
+    
+    
+}
+
 
 void HandleTCPClient( int clntSocket ) {
     char clientBuffer[BUFSIZ];
@@ -74,10 +97,26 @@ int main( int argc, char ** argv) {
     servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servAddr.sin_port = htons(serverPort);
     
+    //Before bind
+    printf("[SERVER SOCK] Before bind\n");
+    //local
+    PrintAddr(servSock, 0);
+    //foreign
+    PrintAddr(servSock, 1);
+    //------------
+    
     //Bind socket to the local address
     if (bind(servSock, (struct sockaddr*)&servAddr, sizeof(servAddr)) < 0 ) {
         ErrorExit("binding");
     }
+    
+    //After bind
+    printf("[SERVER SOCK] After bind\n");
+    //local
+    PrintAddr(servSock, 0);
+    //foreign
+    PrintAddr(servSock, 1);
+    //------------
     
     //Mark servSocket as listeing socket
     if (listen(servSock, MAX_PEDDING) < 0) {
@@ -94,6 +133,14 @@ int main( int argc, char ** argv) {
         if (clientSock < 0) {
             ErrorExit("accept failed");
         }
+        
+        //After accept
+        printf("[CLIENT SOCKET] After accept\n");
+        //local
+        PrintAddr(clientSock, 0);
+        //foreign
+        PrintAddr(clientSock, 1);
+        //----------
         
         char clientName[INET_ADDRSTRLEN]; //String to contain client addr
         if (inet_ntop(AF_INET, &clientAddr.sin_addr.s_addr, clientName,
