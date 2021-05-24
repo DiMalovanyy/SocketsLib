@@ -1,6 +1,6 @@
-#include <stdio.h>
+#include "utils/Framer.h"
+
 #include <stdlib.h>
-#include <stdint.h>
 #include <netinet/in.h>
 
 #include <Practical.h>
@@ -14,7 +14,7 @@
  * (Ambiguity is possible only if the caller passes an empty buffer.)
  * Input stream is always left empty.
  */
-int GetNextMsg(FILE *in, uint8_t *buf, size_t bufSize) {
+int GetNextMsgL(FILE *in, uint8_t *buf, size_t bufSize) {
     uint16_t mSize = 0;
     uint16_t extra = 0;
     
@@ -43,7 +43,7 @@ int GetNextMsg(FILE *in, uint8_t *buf, size_t bufSize) {
  * the delimiter.  Precondition: buf[] is at least msgSize.
  * Returns -1 on any error.
  */
-int PutMsg(uint8_t buf[], size_t msgSize, FILE* out) {
+int PutMsgL(uint8_t buf[], size_t msgSize, FILE* out) {
     if (msgSize > UINT16_MAX) {
         return -1;
     }

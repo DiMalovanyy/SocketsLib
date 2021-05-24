@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
         while ((mSize = GetNextMsg(channel, inBuf, MAX_WIRE_SIZE)) > 0) {
             memset(&v, 0, sizeof(v)); //Clear vote information
             printf("Received message (%d bytes)\n", mSize);
-            if (Decode(inBuf, mSize, %v)) { //Parse to get VoteInfo
+            if (Decode(inBuf, mSize, &v)) { //Parse to get VoteInfo
                 if (!v.isResponse) { //Ignore non-request
                     v.isResponse = true;
                     if (v.candidate >= 0 && v.candidate <= MAX_CANDIDATE) {
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
                 uint8_t outBuf[MAX_WIRE_SIZE];
                 mSize = Encode(&v, outBuf, MAX_WIRE_SIZE);
                 if (PutMsg(outBuf, mSize, channel) < 0) {
-                    fputs("Error framing/outputting message\n" stderr);
+                    fputs("Error framing/outputting message\n", stderr);
                     break;
                 } else {
                     printf("Processed %s for candidate %d; current count is %llu.\n", (v.isInquiry ? "inquiry" : "vote"), v.candidate, v.count);

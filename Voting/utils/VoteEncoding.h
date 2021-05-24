@@ -1,6 +1,9 @@
 #ifndef VOTE_ENCODING_H
 #define VOTE_ENCODING_H
 
+#include <stdint.h>
+#include <stdlib.h>
+
 #include "VoteProtocol.h"
 
 size_t Encode(const VoteInfo *v, uint8_t *outBuf, const size_t bufSize);

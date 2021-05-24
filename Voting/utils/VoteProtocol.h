@@ -1,5 +1,7 @@
 #ifndef VOTE_PROTOCOL_H
 #define VOTE_PROTOCOL_H
+#include <stdbool.h>
+#include <stdint.h>
 
 struct VoteInfo {
     uint64_t count; //invariant; !isResponse => count == 0

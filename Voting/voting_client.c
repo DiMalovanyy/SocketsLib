@@ -19,9 +19,6 @@
 #include "utils/Framer.h"
 #include "utils/VoteEncoding.h"
 
-enum {
-    MAX_CANDIDATE = 1000
-};
 
 int main(int argc, char *argv[]) {
     
@@ -63,7 +60,7 @@ int main(int argc, char *argv[]) {
     size_t reqSize = Encode(&vi, outbuf, MAX_WIRE_SIZE);
     
     //Print some info
-    print("Sending %d-byte %s for candidate %d...\n", reqSize, (inq ? "inquiry" : "vote"), candidate);
+    printf("Sending %d-byte %s for candidate %d...\n", (int)reqSize, (inq ? "inquiry" : "vote"), candidate);
     
     //Frame and send
     if (PutMsg(outbuf, reqSize, str) < 0) {
@@ -73,7 +70,7 @@ int main(int argc, char *argv[]) {
     //Receive and print response
     uint8_t inbuf[MAX_WIRE_SIZE];
     size_t respSize = GetNextMsg(str, inbuf, MAX_WIRE_SIZE); //Get the message
-    if (Decode(inbuf, respSize, %vi)) { //Parse it
+    if (Decode(inbuf, respSize, &vi)) { //Parse it
         printf("Received:\n");
         if (vi.isResponse) {
             printf("Response to ");
