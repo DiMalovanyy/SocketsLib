@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 
 set(HEADERS 
 	utils/voting_utils.h
+	utils/VoteEncoding.h
+	utils/VoteProtocol.h
+	utils/Framer.h
 	)
 	
 
