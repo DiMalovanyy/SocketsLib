@@ -1,4 +1,4 @@
-#include "include/GetAddrInfo.h"
+#include "GetAddrInfo.h"
 
 #include <stdlib.h>
 #include <string.h>

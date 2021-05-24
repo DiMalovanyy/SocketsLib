@@ -1,0 +1,5 @@
+#ifndef BRUTE_FORCE_CODING_H
+#deifne BRUTE_FORCE_CODING_H
+
+#endif
+

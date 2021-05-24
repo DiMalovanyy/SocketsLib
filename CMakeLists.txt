@@ -4,3 +4,4 @@ Project(Sockets_test LANGUAGES C)
 
 add_subdirectory(Utils)
 add_subdirectory(echo)
+add_subdirectory(Voting)
