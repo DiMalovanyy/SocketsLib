@@ -9,6 +9,7 @@ set(HEADERS
 set(SOURCES
 	DelimFramer.c
 	LengthFramer.c
+	VoteEncodingText.c
 	)
 	
 
