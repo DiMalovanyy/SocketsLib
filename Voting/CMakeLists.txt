@@ -10,6 +10,7 @@ set(SOURCES
 	DelimFramer.c
 	LengthFramer.c
 	VoteEncodingText.c
+	VoteEncodingBin.c
 	)
 	
 
